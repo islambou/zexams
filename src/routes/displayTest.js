@@ -99,7 +99,7 @@ export class displayTest extends Component {
   }
 
   handleDoneButtonClick = async () => {
-    let res = await fetch("submit_answers/post", {
+    let res = await fetch("user_answers/post", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
