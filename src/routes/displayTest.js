@@ -111,6 +111,7 @@ export class displayTest extends Component {
         user_answers[q_ind].answers.push(ans);
       }
     });
+    message.info("Answers are submitted !");
     let res = await fetch("/user_answers/post", {
       method: "POST",
       headers: {
@@ -118,15 +119,10 @@ export class displayTest extends Component {
       },
       body: JSON.stringify(user_answers)
     });
-
-    res
-      .json()
-      .then(v => {
-        message.success("Answers are submitted !");
-      })
-      .catch(e => {
-        message.error("Somthing went wrong !");
-      });
+    if (res.status == 200) message.success("Answers are submitted !");
+    else {
+      message.error("Somthing went wrong !");
+    }
   };
   render() {
     if (!this.props.match.params.id)
