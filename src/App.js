@@ -1,28 +1,25 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
 
-class App extends Component {
+import "./App.css";
+import "antd/dist/antd.css";
+import { Layout } from "antd";
+import Notifier from "./components/Notifier";
+import AppRoutes from "./appRoutes";
+import Navbar from "./components/Navbar";
+import { BrowserRouter as Router } from "react-router-dom";
+export default class App extends Component {
   render() {
+    const { Content } = Layout;
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <Router>
+        <>
+          <Notifier />
+          <Navbar />
+          <Content style={{ padding: "0 50px" }}>
+            <AppRoutes className="container" />
+          </Content>
+        </>
+      </Router>
     );
   }
 }
-
-export default App;
