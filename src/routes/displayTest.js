@@ -99,12 +99,24 @@ export class displayTest extends Component {
   }
 
   handleDoneButtonClick = async () => {
+    //prepare answers payload
+    let user_answers = [];
+    this.state.checked.forEach(el => {
+      let ques = el.split("-")[0];
+      let ans = el.split("-")[1];
+      let q_ind = array.findIndex(user_answers, { question: ques });
+      if (q_ind === -1) {
+        user_answers.push({ question: ques, answers: [ans] });
+      } else {
+        user_answers[q_ind].answers.push(ans);
+      }
+    });
     let res = await fetch("/user_answers/post", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(this.state.checked)
+      body: JSON.stringify(user_answers)
     });
 
     res
