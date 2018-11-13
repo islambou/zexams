@@ -8,6 +8,6 @@ Enzyme.configure({ adapter: new Adapter() });
 describe("testing the app component", () => {
   it("renders without crashing", () => {
     const appComponent = shallow(<App />);
-    expect(appComponent).toBeTruthy;
+    expect(appComponent).toBeTruthy();
   });
 });
