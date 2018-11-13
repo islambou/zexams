@@ -1,6 +1,15 @@
 import React, { Component, Suspense } from "react";
 import { connect } from "react-redux";
-import { Steps, Icon, message, Button, Skeleton, Checkbox, Card } from "antd";
+import {
+  Steps,
+  Icon,
+  message,
+  Button,
+  Skeleton,
+  Checkbox,
+  Card,
+  Progress
+} from "antd";
 import { GET_QUESTIONS } from "../sagas/types";
 import array from "lodash/array";
 const Step = Steps.Step;
@@ -11,7 +20,8 @@ export class displayTest extends Component {
     this.state = {
       current: 0,
       steps: [],
-      checked: []
+      checked: [],
+      mark: -1
     };
   }
 
@@ -64,7 +74,6 @@ export class displayTest extends Component {
   };
 
   print_answersOfQuestion = (asnwers, questionIndex, checkedArray) => {
-    console.log("print answersOfQuestion called");
     return asnwers.map((ans, index) => (
       <div className="questionAnswers" key={"qa" + index}>
         <Checkbox
@@ -111,20 +120,36 @@ export class displayTest extends Component {
         user_answers[q_ind].answers.push(ans);
       }
     });
-    message.info("Answers are submitted !");
+    message.info("Answers are submitted !!");
     let res = await fetch("/user_answers/post", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(user_answers)
+      body: JSON.stringify({
+        test: this.props.match.params.id,
+        answers: user_answers
+      })
     });
-    if (res.status == 200) message.success("Answers are submitted !");
-    else {
+    if (res.status == 200) {
+      res.json().then(v => {
+        this.setState({ mark: v });
+      });
+    } else {
       message.error("Somthing went wrong !");
     }
   };
   render() {
+    if (this.state.mark > -1) {
+      return (
+        <div style={{ textAlign: "center" }}>
+          <Progress type="circle" percent={this.state.mark} />
+          <h2 style={{ marginTop: "20px" }}>
+            You scored {this.state.mark}% on this test
+          </h2>
+        </div>
+      );
+    }
     if (!this.props.match.params.id)
       return (
         <h1 style={{ textAlign: "center" }}>
