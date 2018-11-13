@@ -87,8 +87,8 @@ export class Tests extends Component {
           onCancel={this.handleCancelModal}
           onCreate={this.handleCreate}
         />
-        <Button type="dashed" icon="search" onClick={this.showAddTestModal}>
-          Search
+        <Button type="dashed" icon="plus" onClick={this.showAddTestModal}>
+          Add a new test
         </Button>
         <div>
           {this.props.tests.map(test => (
