@@ -4,8 +4,6 @@
   "private": true,
   "dependencies": {
     "antd": "^3.10.4",
-    "babel-jest": "^23.6.0",
-    "babel-loader": "^8.0.4",
     "loadsh": "0.0.3",
     "lodash": "^4.17.11",
     "react": "^16.7.0-alpha.0",
@@ -38,7 +36,6 @@
   "proxy": "http://localhost:1994",
   "devDependencies": {
     "enzyme": "^3.7.0",
-    "enzyme-adapter-react-16": "^1.7.0",
-    "jest": "^23.6.0"
+    "enzyme-adapter-react-16": "^1.7.0"
   }
 }
