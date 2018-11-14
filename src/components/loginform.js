@@ -59,7 +59,7 @@ const mapStateToProps = state => ({});
 const mapDispatchToProps = dispatch => ({
   sendCreds: creds => dispatch({ type: FETCH_USER, payload: creds })
 });
-const WrappedLoginForm = Form.create()(Loginform);
+export const WrappedLoginForm = Form.create()(Loginform);
 
 export default connect(
   mapStateToProps,
