@@ -8,7 +8,8 @@ import AddQuestions from "./components/addQuestion";
 import Tests from "./routes/tests";
 import Login from "./routes/login";
 import displayTest from "./routes/displayTest";
-import LoginRedirector from "./components/LoginRedirector";
+import LoginRedirector from "./components/redirectors/LoginRedirector";
+import HomeRedirector from "./components/redirectors/HomeRedirector";
 //routes
 const Routes = props => {
   const user = props.user;
@@ -20,10 +21,16 @@ const Routes = props => {
         path="/questions/:test?/:testName?"
         component={user._id != undefined ? Questions : LoginRedirector}
       />
-      <Route path="/add-question" component={AddQuestions} />
+      <Route
+        path="/add-question"
+        component={user._id != undefined ? AddQuestions : LoginRedirector}
+      />
       <Route path="/tests" component={Tests} />
       <Route path="/test/:id?" component={displayTest} />
-      <Route path="/login" component={Login} />
+      <Route
+        path="/login"
+        component={user._id == undefined ? Login : HomeRedirector}
+      />
     </>
   );
 };

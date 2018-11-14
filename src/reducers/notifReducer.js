@@ -1,6 +1,7 @@
 import {
   POST_QUESTION_S,
   POST_TEST_S,
+  NOTIFICATION,
   DELETE_NOTIFICATION,
   DELETE_ALL_NOTIFICATIONS
 } from "../sagas/types";
@@ -8,6 +9,8 @@ import {
 export default (state = [], action) => {
   switch (action.type) {
     case POST_QUESTION_S:
+      return [...state, action.payload];
+    case NOTIFICATION:
       return [...state, action.payload];
     case POST_TEST_S:
       return [...state, action.payload];

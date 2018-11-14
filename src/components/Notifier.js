@@ -1,15 +1,19 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Alert, notification } from "antd";
+import { Alert, notification, Switch } from "antd";
+import { SUCCESS, ERROR, INFO } from "../consts/notifications";
 function Notifier(props) {
   return (
     <div id="notifier">
-      {props.notifications.map(notif =>
-        notification[notif.type == 1 ? "success" : "error"]({
-          message: notif.type == 1 ? "success" : "error",
+      {props.notifications.map(notif => {
+        let type = "info";
+        if (notif.type == SUCCESS) type = "success";
+        if (notif.type == ERROR) type = "error";
+        return notification[type]({
+          message: notif.type == SUCCESS ? "success" : "error",
           description: notif.message
-        })
-      )}
+        });
+      })}
     </div>
   );
 }

@@ -27,3 +27,5 @@ export const EDIT_TEST_S = "EDIT_TEST_S";
 
 export const GET_CATEGORIES = "GET_CATEGORIES";
 export const GET_CATEGORIES_s = "GET_CATEGORIES_s";
+
+export const NOTIFICATION = "NOTIFICATION";
