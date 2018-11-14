@@ -5,7 +5,7 @@ import { Input, Checkbox, Icon, Form, Button, Select, InputNumber } from "antd";
 import AddQuestionCategoryModal from "./AddQuestionCategoryModal";
 const FormItem = Form.Item;
 const Option = Select.Option;
-function AddQuestion(props) {
+export function AddQuestion(props) {
   const DEFAULT_QUESTION_DIF = 1;
   const { TextArea } = Input;
   const [question, setQuestion] = useState("");
