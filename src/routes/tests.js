@@ -41,7 +41,6 @@ export class Tests extends Component {
   };
   componentDidUpdate() {
     let notifs = this.props.notifs;
-    console.log(notifs, ME, this.state.addedTestName);
     let notesForMe = notifs.filter(
       obj => (obj.owner = ME && obj.test == this.state.addedTestName)
     );
