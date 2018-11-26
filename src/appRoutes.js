@@ -1,8 +1,10 @@
+import React, { lazy, Suspense } from "react";
+
 import { Route } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 
 import { connect } from "react-redux";
-import React, { lazy, Suspense } from "react";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Questions from "./routes/questions";
 import AddQuestions from "./components/addQuestion";
 import Tests from "./routes/tests";
@@ -14,7 +16,7 @@ import HomeRedirector from "./components/redirectors/HomeRedirector";
 const Routes = props => {
   const user = props.user;
   return (
-    <>
+    <ErrorBoundary>
       <div style={{ marginTop: "50px" }} />
       <Route
         path="/questions/:test?/:testName?"
@@ -30,7 +32,7 @@ const Routes = props => {
         path="/login"
         component={user.username == undefined ? Login : HomeRedirector}
       />
-    </>
+    </ErrorBoundary>
   );
 };
 
