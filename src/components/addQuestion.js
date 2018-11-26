@@ -1,20 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { POST_QUESTION, GET_CATEGORIES_s } from "../sagas/types";
 import { Input, Checkbox, Icon, Form, Button, Select, InputNumber } from "antd";
 import AddQuestionCategoryModal from "./AddQuestionCategoryModal";
 const FormItem = Form.Item;
 const Option = Select.Option;
+
 export function AddQuestion(props) {
-  const DEFAULT_QUESTION_DIF = 1;
-  const { TextArea } = Input;
-  const [question, setQuestion] = useState("");
+  const DEFAULT_QUESTION_DIF = props.question ? props.question.difficulty : 1;
+  const DEFAULT_QUESTION_ANSWER = props.question ? props.question.answers : [];
+  const DEFAULT_QUESTION_TEXT = props.question ? props.question.question : "";
+  const DEFAULT_QUESTION_CATEGORY = props.question
+    ? props.question.category
+    : "No category";
+  const [question, setQuestion] = useState(DEFAULT_QUESTION_TEXT);
   const [difficulty, setDifficulty] = useState(DEFAULT_QUESTION_DIF);
-  const [category, setCategory] = useState(
-    props.categories[0] || "No category"
-  );
-  const [answers, setAnswers] = useState([]);
+  const [category, setCategory] = useState(DEFAULT_QUESTION_CATEGORY);
+  const [answers, setAnswers] = useState(DEFAULT_QUESTION_ANSWER);
   const [modalVisible, setModalVisibility] = useState(false);
+
+  const { TextArea } = Input;
+  console.log(DEFAULT_QUESTION_TEXT);
+
+  useEffect(
+    () => {
+      setQuestion((props.question || {}).question);
+      setCategory((props.question || {}).category);
+      setDifficulty((props.question || {}).difficulty);
+      setAnswers(props.question ? props.question.answers : []);
+    },
+    [props.question]
+  );
 
   function handleAddAnswerButton(e) {
     setAnswers([...answers, { answer: "", correct: false }]);
@@ -79,6 +95,7 @@ export function AddQuestion(props) {
   function saveFormRefModal(formRef) {
     formReff = formRef;
   }
+  console.log("from questions component => ", props.question);
   return (
     <div style={{ maxWidth: "800px", margin: "auto" }}>
       <h2>Question</h2>
@@ -96,7 +113,9 @@ export function AddQuestion(props) {
         onChange={handleCategoryChange}
       >
         {props.categories.map(cat => (
-          <Option value={cat}>{cat}</Option>
+          <Option value={cat} key={cat}>
+            {cat}
+          </Option>
         ))}
       </Select>
       <Button
