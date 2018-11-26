@@ -9,14 +9,12 @@ class Loginform extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log("Received values of form: ", values);
         this.props.sendCreds(values);
       }
     });
   };
 
   render() {
-    console.log(this.props);
     const { getFieldDecorator } = this.props.form;
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
