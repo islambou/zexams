@@ -6,7 +6,7 @@ export default (state = [], action) => {
       return [...state, ...action.payload];
     case DELETE_QUESTIONS_S:
       return state.filter(item => {
-        return action.payload.indexOf(item._id) === -1;
+        return action.payload.indexOf(item.id) === -1;
       });
 
     default:

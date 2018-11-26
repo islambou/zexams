@@ -8,7 +8,6 @@ Enzyme.configure({ adapter: new Adapter() });
 describe("testing the Navbar component", () => {
   it("renders without crashing", () => {
     const navbar = shallow(<Navbar />);
-    console.log("children", navbar.children);
     expect(navbar).toBeTruthy();
   });
 });

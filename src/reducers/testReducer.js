@@ -6,11 +6,11 @@ export default (state = [], action) => {
       return [...state, ...action.payload];
     case DELETE_TESTS_S:
       return state.filter(item => {
-        return action.payload.indexOf(item._id) === -1;
+        return action.payload.indexOf(item.id) === -1;
       });
     case EDIT_TEST_S:
       return state.map(item => {
-        if (item._id === action.payload._id) return action.payload;
+        if (item.id === action.payload.id) return action.payload;
         return item;
       });
     default:

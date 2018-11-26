@@ -17,7 +17,7 @@ export default (state = [], action) => {
     case DELETE_ALL_NOTIFICATIONS:
       return [];
     case DELETE_NOTIFICATION:
-      let ind = state.map(el => el.entity_id).indexOf(action.payload);
+      let ind = state.map(el => el.entityid).indexOf(action.payload);
       console.log(ind);
       if (ind === -1) return state;
       return state.slice(0, ind).concat(state.slice(ind + 1));

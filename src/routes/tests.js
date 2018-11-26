@@ -42,7 +42,7 @@ export class Tests extends Component {
   componentDidUpdate() {
     let notifs = this.props.notifs;
     let notesForMe = notifs.filter(
-      obj => (obj.owner = ME && obj.test == this.state.addedTestName)
+      obj => obj.owner === ME && obj.test === this.state.addedTestName
     );
     if (notesForMe[0]) {
       this.setState({
@@ -60,7 +60,7 @@ export class Tests extends Component {
       okText: "confirm",
       cancelText: "cancel",
       onOk() {
-        props.deleteTest([testID]);
+        props.deleteTest(testID);
       }
     });
   };
@@ -90,8 +90,9 @@ export class Tests extends Component {
           Add a new test
         </Button>
         <div>
-          {this.props.tests.map(test => (
+          {this.props.tests.map((test, index) => (
             <Card
+              key={index}
               style={{
                 width: 300,
                 marginTop: 16,
@@ -100,18 +101,18 @@ export class Tests extends Component {
               }}
               actions={[
                 <Tooltip title="Edit questions">
-                  <Link to={"/questions/" + test._id + "/" + test.test}>
+                  <Link to={"/questions/" + test.id + "/" + test.test}>
                     <Icon type="edit" style={{ fontSize: "16px" }} />
                   </Link>
                 </Tooltip>,
                 <Tooltip title="Delete Test">
                   <Icon
                     type="delete"
-                    onClick={() => this.confirmDialog(test.test, test._id)}
+                    onClick={() => this.confirmDialog(test.test, test.id)}
                   />
                 </Tooltip>,
                 <Tooltip title="See the Test">
-                  <Link to={"/test/" + test._id}>
+                  <Link to={"/test/" + test.id}>
                     <Icon type="thunderbolt" style={{ fontSize: "16px" }} />
                   </Link>
                 </Tooltip>

@@ -1,18 +1,20 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Table, Button, Tooltip } from "antd";
+import { Table, Button, Tooltip, Drawer } from "antd";
 import { GET_QUESTIONS, DELETE_QUESTIONS, EDIT_TEST } from "../sagas/types";
 import { withRouter } from "react-router-dom";
+import AddQuestion from "../components/addQuestion";
 
 export class Questions extends Component {
   state = {
     filteredInfo: null,
     sortedInfo: null,
-    selectedRows: []
+    selectedRows: [],
+    visible: false,
+    questionToEdit: undefined
   };
 
   handleChangeTable = (pagination, filters, sorter) => {
-    console.log("Various parameters", pagination, filters, sorter);
     this.setState({
       filteredInfo: filters,
       sortedInfo: sorter
@@ -31,10 +33,9 @@ export class Questions extends Component {
   };
 
   handleAddRemoveQuestionToTestButton = q => {
-    let before_questions = this.props.getTest(this.props.match.params.test);
-    if (before_questions) before_questions = before_questions.questions;
+    let before_questions =
+      this.props.getTest(this.props.match.params.test).questions || [];
     let new_questions = [];
-    console.log(before_questions);
     let index_of_question = before_questions.indexOf(q);
     if (index_of_question == -1) new_questions = [...before_questions, q];
     else
@@ -42,23 +43,36 @@ export class Questions extends Component {
         .slice(0, index_of_question)
         .concat(before_questions.slice(index_of_question + 1));
     this.props.editTestQuestions({
-      _id: this.props.match.params.test,
-      questions: new_questions
+      id: this.props.match.params.test,
+      questions: new_questions,
+      test: this.props.match.params.testName
     });
   };
   handleAddRemoveQuestionToTestMultiButton = q => {
     let toBeadded = this.state.selectedRows.map(item => item.key);
     this.props.editTestQuestions({
-      _id: this.props.match.params.test,
-      questions: toBeadded
+      id: this.props.match.params.test,
+      questions: toBeadded,
+      test: this.props.match.params.testName
     });
     this.setState({ selectedRows: [] });
   };
   handleDeleteQuestionButton = q => {
     this.props.deleteQuestions([q]);
   };
-  handleEditQuestionButton = q => {};
-
+  handleEditQuestionButton = q => {
+    console.log("setting question to be delited", q);
+    this.setState({
+      visible: true,
+      questionToEdit: q
+    });
+  };
+  onDrawerClose = () => {
+    this.setState({
+      visible: false,
+      questionToEdit: undefined
+    });
+  };
   handleDeleteMultiButon = () => {
     let toBeDeleted = this.state.selectedRows.map(item => item.key);
     this.props.deleteQuestions(toBeDeleted);
@@ -79,7 +93,7 @@ export class Questions extends Component {
           type="dashed"
           shape="circle"
           icon="edit"
-          onClick={editHandler()}
+          onClick={() => editHandler()}
         />
       </Tooltip>
       <Tooltip title="delete question">
@@ -93,13 +107,15 @@ export class Questions extends Component {
     </>
   );
 
-  forTestActionButton = (changeHandler, question_id) => {
-    let before_questions = this.props.getTest(this.props.match.params.test);
-    if (before_questions) before_questions = before_questions.questions;
-    else return;
-    console.log(before_questions, question_id);
-    let question_exists = before_questions.indexOf(question_id) != -1;
-    console.log("question exists: ", question_exists);
+  forTestActionButton = (changeHandler, questionid) => {
+    console.log(this.props.getTest(this.props.match.params.test));
+    let before_questions = this.props.getTest(this.props.match.params.test)
+      .questions
+      ? this.props.getTest(this.props.match.params.test).questions
+      : [];
+
+    console.log(before_questions);
+    let question_exists = before_questions.indexOf(questionid) != -1;
     return (
       <Tooltip
         title={
@@ -155,31 +171,23 @@ export class Questions extends Component {
 
     const data = this.props.questions.map(item => ({
       ...item,
-      key: item._id,
+      key: item.id,
       actions: this.props.match.params.test
         ? this.forTestActionButton(
-            () => this.handleAddRemoveQuestionToTestButton(item._id),
-            item._id
+            () => this.handleAddRemoveQuestionToTestButton(item.id),
+            item.id
           )
         : this.regularActionButtons(
-            () => this.handleEditQuestionButton(),
-            () => this.handleDeleteQuestionButton(item._id)
+            () => this.handleEditQuestionButton(item),
+            () => this.handleDeleteQuestionButton(item.id)
           )
     }));
     const rowSelection = {
-      onChange: (selectedRowKeys, selectedRows) => {
-        /*   console.log(
-          `selectedRowKeys: ${selectedRowKeys}`,
-          "selectedRows: ",
-          selectedRows
-        );*/
-      },
+      onChange: (selectedRowKeys, selectedRows) => {},
       onSelect: (record, selected, selectedRows) => {
-        //  console.log(record, selected, selectedRows);
         this.setState({ selectedRows });
       },
       onSelectAll: (selected, selectedRows, changeRows) => {
-        // console.log(selected, selectedRows, changeRows);
         this.setState({ selectedRows });
       }
     };
@@ -191,20 +199,13 @@ export class Questions extends Component {
       {
         title: "Category",
         dataIndex: "category",
-        filters: data.map(item => ({
-          value: item["category"],
-          text: item["category"]
-        })),
-        onFilter: (category, record) => record.category.indexOf(category) === 0,
-        sorter: (a, b) => a.category.length - b.category.length,
-        sortOrder: sortedInfo.columnKey === "category" && sortedInfo.order
+        filters: this.props.categories.map(cat => ({ value: cat, text: cat })),
+        onFilter: (category, record) => record.category.indexOf(category) === 0
       },
       {
         title: "Difficulty",
         dataIndex: "difficulty",
-        filters: Array.from(new Set(data.map(item => item["difficulty"]))).map(
-          item => ({ value: item, text: item })
-        ),
+
         onFilter: (difficulty, record) =>
           record.difficulty.indexOf(difficulty) === 0,
 
@@ -227,7 +228,21 @@ export class Questions extends Component {
         <div style={{ marginBottom: 20 }}>
           {this.contextualActionBarButton()}
         </div>
-
+        <Drawer
+          title={`Edit ${(this.state.questionToEdit || {}).id}`}
+          width={720}
+          placement="right"
+          onClose={this.onDrawerClose}
+          maskClosable={false}
+          visible={this.state.visible}
+          style={{
+            height: "calc(100% - 55px)",
+            overflow: "auto",
+            paddingBottom: 53
+          }}
+        >
+          <AddQuestion question={this.state.questionToEdit} />
+        </Drawer>
         <Table
           columns={columns}
           dataSource={data}
@@ -241,7 +256,8 @@ export class Questions extends Component {
 
 const mapStateToProps = state => ({
   questions: state.questions,
-  getTest: id => state.tests.find(el => el._id === id)
+  categories: state.categories,
+  getTest: id => state.tests.find(el => el.id === id) || {}
 });
 
 const mapDispatchToProps = dispatch => ({
