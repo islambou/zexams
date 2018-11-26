@@ -1,11 +1,4 @@
-import React, { Component } from "react";
-
-import { Button, Modal, Form, Input, Radio } from "antd";
-import addQuestion from "./addQuestion";
-
-const FormItem = Form.Item;
-
-const addQuestionCategoryModal = Form.create()(
+const LoginModal = Form.create()(
   class extends React.Component {
     render() {
       const { visible, onCancel, onCreate, form } = this.props;
@@ -13,14 +6,14 @@ const addQuestionCategoryModal = Form.create()(
       return (
         <Modal
           visible={visible}
-          title="Add a new category"
-          okText="Add"
+          title="Create a new collection"
+          okText="Create"
           onCancel={onCancel}
           onOk={onCreate}
         >
           <Form layout="vertical">
             <FormItem label="Test title">
-              {getFieldDecorator("category", {
+              {getFieldDecorator("test", {
                 rules: [
                   {
                     required: true,
@@ -35,5 +28,3 @@ const addQuestionCategoryModal = Form.create()(
     }
   }
 );
-
-export default addQuestionCategoryModal;

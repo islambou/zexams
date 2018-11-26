@@ -4,28 +4,4 @@ export const DELETE_ALL_NOTIFICATIONS = "DELETE_ALL_NOTIFICATIONS";
 export const FETCH_USER = "FETCH_USER";
 export const FETCH_USER_S = "FETCH_USER_S";
 
-export const POST_QUESTION = "POST_QUESTION";
-export const POST_QUESTION_S = "POST_QUESTION_S";
-
-export const GET_QUESTIONS = "GET_QUESTIONS";
-export const GET_QUESTIONS_S = "GET_QUESTIONS_S";
-
-export const DELETE_QUESTIONS = "DELETE_QUESTIONS";
-export const DELETE_QUESTIONS_S = "DELETE_QUESTIONS_S";
-
-export const POST_TEST = "POST_TEST";
-export const POST_TEST_S = "POST_TEST_S";
-
-export const GET_TESTS = "GET_TESTS";
-export const GET_TESTS_S = "GET_TESTS_S";
-
-export const DELETE_TESTS = "DELETE_TESTS";
-export const DELETE_TESTS_S = "DELETE_TESTS_S";
-
-export const EDIT_TEST = "EDIT_TEST";
-export const EDIT_TEST_S = "EDIT_TEST_S";
-
-export const GET_CATEGORIES = "GET_CATEGORIES";
-export const GET_CATEGORIES_s = "GET_CATEGORIES_s";
-
 export const NOTIFICATION = "NOTIFICATION";
