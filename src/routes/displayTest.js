@@ -31,23 +31,21 @@ export class displayTest extends Component {
     }
   };
   async fetch_test_data(testID) {
-    let fetchData = await fetch("/test/get", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify([testID])
-    });
+    let fetchData = await fetch("/tests/" + testID);
     let testData = await fetchData.json();
 
-    let fetchQuestions = await fetch("/question/get", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(testData.find(el => el._id === testID).questions)
+    let questionPromesses = [];
+
+    testData.questions.forEach(el => {
+      questionPromesses.push(fetch("/questions/" + el));
     });
-    var questionsFromServer = await fetchQuestions.json();
+
+    var questionsFromServerResponses = await Promise.all(questionPromesses);
+    let questionJsonsPromesses = await questionsFromServerResponses.map(el =>
+      el.json()
+    );
+    let questionsFromServer = await Promise.all(questionJsonsPromesses);
+    console.log(questionsFromServer);
 
     let questionSteps = questionsFromServer.map((el, index) => ({
       ques: el
@@ -91,7 +89,7 @@ export class displayTest extends Component {
       <Card type="inner" title={questionBody} style={{ margin: "40px 0" }}>
         {this.print_answersOfQuestion(
           question.answers,
-          question._id,
+          question.id,
           checkedArray
         )}
       </Card>
@@ -121,7 +119,7 @@ export class displayTest extends Component {
       }
     });
     message.info("Answers are submitted !!");
-    let res = await fetch("/user_answers/post", {
+    let res = await fetch("/user_answers", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
