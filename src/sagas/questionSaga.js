@@ -15,7 +15,7 @@ import {
 } from "./types";
 function* postQuestion(action) {
   try {
-    const data = yield call(fetch, "/question/add", {
+    const data = yield call(fetch, "/questions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -29,20 +29,20 @@ function* postQuestion(action) {
 
       yield put({
         type: GET_QUESTIONS_S,
-        payload: resp
+        payload: [resp]
       });
       yield put({
         type: POST_QUESTION_S,
         payload: {
           type: 1,
           message: "question added succesfully",
-          entity_id: resp._id
+          entityid: resp.id
         }
       });
       yield call(delay, 1000);
       yield put({
         type: DELETE_ALL_NOTIFICATIONS,
-        payload: resp._id
+        payload: resp.id
       });
     } else {
       let resp = yield data.json();
@@ -59,13 +59,7 @@ function* postQuestion(action) {
 
 function* getQuestions(action) {
   try {
-    const data = yield call(fetch, "/question/get", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(action.payload || [])
-    });
+    const data = yield call(fetch, "/questions");
 
     if (data.status === 200) {
       let ques = yield data.json();
@@ -78,7 +72,7 @@ function* getQuestions(action) {
 
 function* deleteQuestions(action) {
   try {
-    const data = yield call(fetch, "/question", {
+    const data = yield call(fetch, "/questions", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
@@ -98,7 +92,7 @@ function* deleteQuestions(action) {
 
 function* getCategories() {
   try {
-    const data = yield call(fetch, "/category");
+    const data = yield call(fetch, "/questions/categories");
 
     if (data.status === 200) {
       let cats = yield data.json();

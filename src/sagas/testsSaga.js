@@ -1,4 +1,6 @@
 import { put, call, takeLatest } from "redux-saga/effects";
+import { delay } from "redux-saga";
+
 import {
   POST_TEST,
   POST_TEST_S,
@@ -7,12 +9,13 @@ import {
   DELETE_TESTS,
   DELETE_TESTS_S,
   EDIT_TEST,
-  EDIT_TEST_S
+  EDIT_TEST_S,
+  DELETE_ALL_NOTIFICATIONS
 } from "./types";
 
 function* postTest(action) {
   try {
-    const data = yield call(fetch, "/test", {
+    const data = yield call(fetch, "/tests", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -29,14 +32,17 @@ function* postTest(action) {
           type: 1,
           message: "test added succesfully",
           owner: POST_TEST,
-          test: resp[0].test,
-          testId: resp[0]._id
+          test: resp.test,
+          testId: resp.id
         }
       });
-
+      yield call(delay, 1000);
+      yield put({
+        type: DELETE_ALL_NOTIFICATIONS
+      });
       yield put({
         type: GET_TESTS_S,
-        payload: resp
+        payload: [resp]
       });
     } else {
       let resp = yield data.json();
@@ -53,7 +59,7 @@ function* postTest(action) {
 
 function* getTets() {
   try {
-    const data = yield call(fetch, "/test");
+    const data = yield call(fetch, "/tests");
 
     if (data.status === 200) {
       let tes = yield data.json();
@@ -66,19 +72,15 @@ function* getTets() {
 
 function* deleteTests(action) {
   try {
-    console.log(action.payload);
-    const data = yield call(fetch, "/test", {
+    const data = yield call(fetch, "/tests/" + action.payload, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
-      },
-      body: JSON.stringify(action.payload)
+      }
     });
 
     if (data.status === 200) {
-      let tes = yield data.json();
-      console.log(tes);
-      yield put({ type: DELETE_TESTS_S, payload: tes });
+      yield put({ type: DELETE_TESTS_S, payload: action.payload });
     }
   } catch (e) {
     console.log(e);
@@ -87,7 +89,7 @@ function* deleteTests(action) {
 
 function* editTest(action) {
   try {
-    const data = yield call(fetch, "/test", {
+    const data = yield call(fetch, "/tests", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json"
@@ -98,14 +100,6 @@ function* editTest(action) {
     if (data.status === 200) {
       let tes = yield data.json();
       yield put({ type: EDIT_TEST_S, payload: tes });
-      yield put({
-        type: POST_TEST_S,
-        payload: {
-          type: 1,
-          message: tes.questions.length + " questions added succesfully",
-          owner: POST_TEST
-        }
-      });
     }
   } catch (e) {
     console.log(e);
