@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 
 export class Navbar extends Component {
   state = {
-    current: "mail"
+    current: "candidates"
   };
 
   handleClick = e => {
@@ -21,6 +21,12 @@ export class Navbar extends Component {
         selectedKeys={[this.state.current]}
         mode="horizontal"
       >
+        <Menu.Item key="candidates">
+          <Link to="/candidates">
+            <Icon type="user" />
+            Candidates
+          </Link>
+        </Menu.Item>
         <Menu.Item key="questions">
           <Link to="/questions">
             <Icon type="question" />
