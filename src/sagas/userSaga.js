@@ -41,7 +41,6 @@ function* fetchUser(action) {
 }
 
 function* fetchCandidates() {
-  console.log("fetch candidates");
   try {
     const data = yield call(fetch, "/candidate");
 
