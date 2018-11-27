@@ -45,7 +45,6 @@ export class displayTest extends Component {
       el.json()
     );
     let questionsFromServer = await Promise.all(questionJsonsPromesses);
-    console.log(questionsFromServer);
 
     let questionSteps = questionsFromServer.map((el, index) => ({
       ques: el
@@ -106,6 +105,7 @@ export class displayTest extends Component {
   }
 
   handleDoneButtonClick = async () => {
+    console.log(this.props);
     //prepare answers payload
     let user_answers = [];
     this.state.checked.forEach(el => {
@@ -118,7 +118,7 @@ export class displayTest extends Component {
         user_answers[q_ind].answers.push(ans);
       }
     });
-    message.info("Answers are submitted !!");
+    message.info("Submitting Answers !!");
     let res = await fetch("/user_answers", {
       method: "POST",
       headers: {
@@ -126,6 +126,7 @@ export class displayTest extends Component {
       },
       body: JSON.stringify({
         test: this.props.match.params.id,
+        user: this.props.user.id ? this.props.user.id : "",
         answers: user_answers
       })
     });
@@ -198,7 +199,9 @@ export class displayTest extends Component {
   }
 }
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  user: state.user
+});
 
 const mapDispatchToProps = dispatch => ({
   getQuestions: payload => dispatch({ type: GET_QUESTIONS, payload: payload })
