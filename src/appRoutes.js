@@ -6,7 +6,6 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Questions from "./routes/questions";
-import Candidates from "./routes/candidates";
 import AddQuestions from "./components/addQuestion";
 import Tests from "./routes/tests";
 import Login from "./routes/login";
@@ -27,18 +26,8 @@ const Routes = props => {
         path="/add-question"
         component={user.username != undefined ? AddQuestions : LoginRedirector}
       />
-      <Route
-        path="/candidates"
-        component={user.username != undefined ? Candidates : LoginRedirector}
-      />
-      <Route
-        path="/tests"
-        component={user.username != undefined ? Tests : LoginRedirector}
-      />
-      <Route
-        path="/test/:id?"
-        component={user.username != undefined ? displayTest : LoginRedirector}
-      />
+      <Route path="/tests" component={Tests} />
+      <Route path="/test/:id?" component={displayTest} />
       <Route
         path="/login"
         component={user.username == undefined ? Login : HomeRedirector}
