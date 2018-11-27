@@ -1,6 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Table, Badge, Menu, Dropdown, Icon, Button, Modal } from "antd";
+import {
+  Table,
+  Badge,
+  Menu,
+  Dropdown,
+  Icon,
+  Button,
+  Modal,
+  Tag,
+  Spin
+} from "antd";
 import AddCandidate from "../components/AddCandidate";
 import { FETCH_CANDIDATES } from "../sagas/types";
 const menu = (
@@ -11,7 +21,7 @@ const menu = (
 );
 
 class Candidates extends Component {
-  state = { addCandidatevisible: false };
+  state = { addCandidatevisible: false, extendedData: [] };
 
   showAddCandidateModal = () => {
     this.setState({
@@ -23,50 +33,31 @@ class Candidates extends Component {
       addCandidatevisible: false
     });
   };
-  expandedRowRender = () => {
+  async expandedRowRender(expended) {
+    console.log(expended);
     const columns = [
       { title: "Date", dataIndex: "date", key: "date" },
-      { title: "Name", dataIndex: "name", key: "name" },
+      { title: "Test", dataIndex: "name", key: "name" },
       {
         title: "Status",
-        key: "state",
-        render: () => (
-          <span>
-            <Badge status="success" />
-            Finished
-          </span>
-        )
+        key: "state"
       },
-      { title: "Upgrade Status", dataIndex: "upgradeNum", key: "upgradeNum" },
+      { title: "Mark", dataIndex: "upgradeNum", key: "upgradeNum" }
+    ];
+
+    let data = [
       {
-        title: "Action",
-        dataIndex: "operation",
-        key: "operation",
-        render: () => (
-          <span className="table-operation">
-            <a href="javascript:;">Pause</a>
-            <a href="javascript:;">Stop</a>
-            <Dropdown overlay={menu}>
-              <a href="javascript:;">
-                More <Icon type="down" />
-              </a>
-            </Dropdown>
-          </span>
-        )
+        key: "x",
+        date: <Spin />,
+        name: "",
+        upgradeNum: "",
+        state: ""
       }
     ];
 
-    const data = [];
-    for (let i = 0; i < 3; ++i) {
-      data.push({
-        key: i,
-        date: "2014-12-24 23:12:00",
-        name: "This is production name",
-        upgradeNum: "Upgraded: 56"
-      });
-    }
+    console.log(data);
     return <Table columns={columns} dataSource={data} pagination={false} />;
-  };
+  }
 
   columns = [
     { title: "first Name", dataIndex: "firstName", key: "firstName" },
@@ -74,11 +65,7 @@ class Candidates extends Component {
     { title: "Techs", dataIndex: "techs", key: "techs" },
     { title: "phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
     { title: "email", dataIndex: "email", key: "email" },
-    {
-      title: "Action",
-      key: "operation",
-      render: () => <a href="javascript:;">Publish</a>
-    }
+    { title: "Action", key: "operation" }
   ];
 
   data = [];
@@ -91,7 +78,16 @@ class Candidates extends Component {
         key: candidate.id,
         firstName: candidate.firstName,
         lastName: candidate.lastName,
-        techs: candidate.techs,
+        operation: <a href="javascript:;">Publish</a>,
+        techs: (
+          <span>
+            {candidate.techs.map(tag => (
+              <Tag color="blue" key={tag}>
+                {tag}
+              </Tag>
+            ))}
+          </span>
+        ),
         phoneNumber: candidate.phoneNumber,
         email: candidate.email
       });
