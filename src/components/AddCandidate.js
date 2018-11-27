@@ -4,33 +4,80 @@ import { connect } from "react-redux";
 import {
   Form,
   Input,
-  Tooltip,
-  Icon,
-  Cascader,
   Select,
-  Row,
-  Col,
   DatePicker,
   Button,
-  AutoComplete
+  Tag,
+  Tooltip,
+  Icon
 } from "antd";
-
+import { SAVE_CANDIDATE } from "../sagas/types";
 const FormItem = Form.Item;
 const Option = Select.Option;
-const AutoCompleteOption = AutoComplete.Option;
 
 export class AddCandidate extends Component {
+  constructor(props) {
+    super(props);
+  }
   state = {
     confirmDirty: false,
-    autoCompleteResult: []
+    autoCompleteResult: [],
+    tags: []
   };
+
+  //----tags
+  handleCloseTag = removedTag => {
+    const tags = this.state.tags.filter(tag => tag !== removedTag);
+    console.log(tags);
+    this.setState({ tags });
+  };
+
+  showInputTag = () => {
+    console.log(this.tagInputRef);
+    this.setState({ inputVisibleTag: true });
+  };
+
+  handleInputChangeTag = e => {
+    this.setState({ inputValueTag: e.target.value }, () => this.input.focus());
+  };
+
+  handleInputConfirmTag = () => {
+    const state = this.state;
+    const inputValueTag = state.inputValueTag;
+    let tags = state.tags;
+    if (inputValueTag && tags.indexOf(inputValueTag) === -1) {
+      tags = [...tags, inputValueTag];
+    }
+    console.log(tags);
+    this.setState({
+      tags,
+      inputVisibleTag: false,
+      inputValueTag: ""
+    });
+  };
+
+  //------
+
   handleSubmit = e => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log("Received values of form: ", values);
+        values.birthDay = values.birthDay.toISOString().substring(0, 10);
+        values.techs = this.state.tags;
+        values.phoneNumber = "+" + values.prefix + "-" + values.phoneNumber;
+        this.props.sendForm(values);
       }
     });
+  };
+  saveInputRef = input => (this.input = input);
+  saveFormRef = form => (this.form = form);
+
+  static getDerivedStateFromProps = (props, state) => {
+    if (props.notif.length > 0) {
+      props.form.resetFields();
+    }
+    return state;
   };
 
   render() {
@@ -65,11 +112,16 @@ export class AddCandidate extends Component {
         <Option value="33">+33</Option>
       </Select>
     );
+    const { tags, inputVisibleTag, inputValueTag } = this.state;
 
     return (
-      <Form onSubmit={this.handleSubmit} className="my-form">
+      <Form
+        onSubmit={this.handleSubmit}
+        className="my-form"
+        ref={this.saveFormRef}
+      >
         <FormItem {...formItemLayout} label="First name">
-          {getFieldDecorator("firstname", {
+          {getFieldDecorator("firstName", {
             rules: [
               {
                 required: true,
@@ -79,7 +131,7 @@ export class AddCandidate extends Component {
           })(<Input />)}
         </FormItem>
         <FormItem {...formItemLayout} label="Last name">
-          {getFieldDecorator("lastname", {
+          {getFieldDecorator("lastName", {
             rules: [
               {
                 required: true,
@@ -113,7 +165,7 @@ export class AddCandidate extends Component {
           })(<Input />)}
         </FormItem>
         <FormItem {...formItemLayout} label="Birthday">
-          {getFieldDecorator("Birthday", {
+          {getFieldDecorator("birthDay", {
             rules: [
               {
                 type: "object",
@@ -124,12 +176,54 @@ export class AddCandidate extends Component {
           })(<DatePicker />)}
         </FormItem>
         <FormItem {...formItemLayout} label="Phone Number">
-          {getFieldDecorator("phone", {
+          {getFieldDecorator("phoneNumber", {
             rules: [
               { required: true, message: "Please input your phone number!" }
             ]
           })(<Input addonBefore={prefixSelector} style={{ width: "100%" }} />)}
         </FormItem>
+        <FormItem {...tailFormItemLayout} label="Stack">
+          {tags.map((tag, index) => {
+            const isLongTag = tag.length > 20;
+            const tagElem = (
+              <Tag
+                key={tag}
+                closable={true}
+                afterClose={() => this.handleCloseTag(tag)}
+              >
+                {isLongTag ? `${tag.slice(0, 20)}...` : tag}
+              </Tag>
+            );
+            return isLongTag ? (
+              <Tooltip title={tag} key={tag}>
+                {tagElem}
+              </Tooltip>
+            ) : (
+              tagElem
+            );
+          })}
+          {inputVisibleTag && (
+            <Input
+              ref={this.saveInputRef}
+              type="text"
+              size="small"
+              style={{ width: 78 }}
+              value={inputValueTag}
+              onChange={this.handleInputChangeTag}
+              onBlur={this.handleInputConfirmTag}
+              onPressEnter={this.handleInputConfirmTag}
+            />
+          )}
+          {!inputVisibleTag && (
+            <Tag
+              onClick={this.showInputTag}
+              style={{ background: "#fff", borderStyle: "dashed" }}
+            >
+              <Icon type="plus" /> New Tag
+            </Tag>
+          )}
+        </FormItem>
+
         <FormItem {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit">
             Register
@@ -140,9 +234,12 @@ export class AddCandidate extends Component {
   }
 }
 
-const mapStateToProps = state => ({});
-
-const mapDispatchToProps = {};
+const mapStateToProps = state => ({
+  notif: state.candidateNotif
+});
+const mapDispatchToProps = dispatch => ({
+  sendForm: form => dispatch({ type: SAVE_CANDIDATE, payload: form })
+});
 
 export default connect(
   mapStateToProps,
