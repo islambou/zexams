@@ -21,14 +21,15 @@ const menu = (
 );
 
 const extendedTableCols = [
+  { title: "Test", dataIndex: "test", key: "test" },
+  { title: "Status", dataIndex: "state", key: "state" },
+  { title: "Mark", dataIndex: "mark", key: "mark" },
   { title: "Date", dataIndex: "date", key: "date" },
-  { title: "Test", dataIndex: "name", key: "name" },
-  { title: "Status", dataIndex: "status", key: "state" },
-  { title: "Mark", dataIndex: "upgradeNum", key: "upgradeNum" }
+  { title: "", dataIndex: "actions", key: "actions" }
 ];
 
 class Candidates extends Component {
-  state = { addCandidatevisible: false, extendedData: [] };
+  state = { addCandidatevisible: false, extendedData: {} };
 
   showAddCandidateModal = () => {
     this.setState({
@@ -40,26 +41,46 @@ class Candidates extends Component {
       addCandidatevisible: false
     });
   };
-  expandedRowRender(record, index, indent, expended) {
+  expandedRowRender = (record, index, indent, expended) => {
+    let data = [];
     if (expended) {
       let uid = record.key;
       //get tests of this user
-    }
-    let data = [
-      {
-        key: "x",
-        date: <Spin />,
-        name: "",
-        upgradeNum: "",
-        state: ""
-      }
-    ];
+      if (!this.state.extendedData[uid])
+        fetch(`/user_answers/user/withtitles/${uid}`)
+          .then(res => res.json())
+          .then(tests => {
+            console.log(tests);
 
-    //  console.log(data);
+            let udata = tests.map(t => {
+              let testStatus;
+              if (t.mark == undefined)
+                testStatus = <Badge status="warning" text="Not passed yet" />;
+              else if (t.mark < 50)
+                testStatus = <Badge status="Error" text="Failed" />;
+              else testStatus = <Badge status="success" text="Passed" />;
+
+              return {
+                key: t.id,
+                date: t.date,
+                test: t.test,
+                state: testStatus,
+                mark: t.mark + "%"
+                //  actions:
+              };
+            });
+            let olded = this.state.extendedData;
+            olded[uid] = udata;
+            this.setState({ extendedData: olded });
+          });
+
+      data = this.state.extendedData[uid] ? this.state.extendedData[uid] : [];
+    }
+    console.log(data);
     return (
       <Table columns={extendedTableCols} dataSource={data} pagination={false} />
     );
-  }
+  };
 
   columns = [
     { title: "first Name", dataIndex: "firstName", key: "firstName" },
@@ -75,6 +96,7 @@ class Candidates extends Component {
     this.props.getCandidates();
   };
   populate = () => {
+    this.data = [];
     this.props.candidates.forEach(candidate => {
       this.data.push({
         key: candidate.id,
