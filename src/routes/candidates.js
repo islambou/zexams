@@ -20,6 +20,13 @@ const menu = (
   </Menu>
 );
 
+const extendedTableCols = [
+  { title: "Date", dataIndex: "date", key: "date" },
+  { title: "Test", dataIndex: "name", key: "name" },
+  { title: "Status", dataIndex: "status", key: "state" },
+  { title: "Mark", dataIndex: "upgradeNum", key: "upgradeNum" }
+];
+
 class Candidates extends Component {
   state = { addCandidatevisible: false, extendedData: [] };
 
@@ -33,18 +40,11 @@ class Candidates extends Component {
       addCandidatevisible: false
     });
   };
-  async expandedRowRender(expended) {
-    console.log(expended);
-    const columns = [
-      { title: "Date", dataIndex: "date", key: "date" },
-      { title: "Test", dataIndex: "name", key: "name" },
-      {
-        title: "Status",
-        key: "state"
-      },
-      { title: "Mark", dataIndex: "upgradeNum", key: "upgradeNum" }
-    ];
-
+  expandedRowRender(record, index, indent, expended) {
+    if (expended) {
+      let uid = record.key;
+      //get tests of this user
+    }
     let data = [
       {
         key: "x",
@@ -55,8 +55,10 @@ class Candidates extends Component {
       }
     ];
 
-    console.log(data);
-    return <Table columns={columns} dataSource={data} pagination={false} />;
+    //  console.log(data);
+    return (
+      <Table columns={extendedTableCols} dataSource={data} pagination={false} />
+    );
   }
 
   columns = [

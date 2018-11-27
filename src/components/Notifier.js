@@ -22,7 +22,6 @@ class Notifier extends React.Component {
           description: notif.message
         });
     });
-    console.log(nots);
     return nots;
   }
 
