@@ -9,7 +9,7 @@ import {
   Button,
   Modal,
   Tag,
-  Spin
+  Tooltip
 } from "antd";
 import AddCandidate from "../components/AddCandidate";
 import { FETCH_CANDIDATES } from "../sagas/types";
@@ -22,10 +22,39 @@ const menu = (
 
 const extendedTableCols = [
   { title: "Test", dataIndex: "test", key: "test" },
-  { title: "Status", dataIndex: "state", key: "state" },
+  {
+    title: "Status",
+    dataIndex: "state",
+    key: "state",
+    render: (x, record) => {
+      let testStatus;
+      if (record.mark == undefined)
+        testStatus = <Badge status="warning" text="Not passed yet" />;
+      else if (record.mark < 50)
+        testStatus = <Badge status="Error" text="Failed" />;
+      else testStatus = <Badge status="success" text="Passed" />;
+      return testStatus;
+    }
+  },
   { title: "Mark", dataIndex: "mark", key: "mark" },
   { title: "Date", dataIndex: "date", key: "date" },
-  { title: "", dataIndex: "actions", key: "actions" }
+  {
+    title: "",
+    dataIndex: "actions",
+    key: "actions",
+    render: (x, record) => {
+      return (
+        <Tooltip title="View answers">
+          <Button
+            type="dashed"
+            shape="circle"
+            icon="form"
+            onClick={() => alert("hi " + record.key)}
+          />
+        </Tooltip>
+      );
+    }
+  }
 ];
 
 class Candidates extends Component {
@@ -53,20 +82,11 @@ class Candidates extends Component {
             console.log(tests);
 
             let udata = tests.map(t => {
-              let testStatus;
-              if (t.mark == undefined)
-                testStatus = <Badge status="warning" text="Not passed yet" />;
-              else if (t.mark < 50)
-                testStatus = <Badge status="Error" text="Failed" />;
-              else testStatus = <Badge status="success" text="Passed" />;
-
               return {
                 key: t.id,
                 date: t.date,
                 test: t.test,
-                state: testStatus,
                 mark: t.mark + "%"
-                //  actions:
               };
             });
             let olded = this.state.extendedData;
@@ -76,7 +96,6 @@ class Candidates extends Component {
 
       data = this.state.extendedData[uid] ? this.state.extendedData[uid] : [];
     }
-    console.log(data);
     return (
       <Table columns={extendedTableCols} dataSource={data} pagination={false} />
     );
