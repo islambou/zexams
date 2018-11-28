@@ -107,7 +107,40 @@ class Candidates extends Component {
     { title: "Techs", dataIndex: "techs", key: "techs" },
     { title: "phone Number", dataIndex: "phoneNumber", key: "phoneNumber" },
     { title: "email", dataIndex: "email", key: "email" },
-    { title: "Action", key: "operation" }
+    {
+      title: "Action",
+      key: "operation",
+      render: (x, record) => {
+        return (
+          <>
+            <Tooltip title="view resume">
+              <Button
+                type="dashed"
+                shape="circle"
+                icon="file"
+                onClick={() => alert("hi " + record.key)}
+              />
+            </Tooltip>
+            <Tooltip title="Assigne tests">
+              <Button
+                type="dashed"
+                shape="circle"
+                icon="exception"
+                onClick={() => alert("hi " + record.key)}
+              />
+            </Tooltip>
+            <Tooltip title="Delete candidate">
+              <Button
+                type="dashed"
+                shape="circle"
+                icon="form"
+                onClick={() => alert("hi " + record.key)}
+              />
+            </Tooltip>
+          </>
+        );
+      }
+    }
   ];
 
   data = [];
